@@ -1,8 +1,9 @@
+import 'dart:convert'; // Para decodificar JSON
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class ScanQrScreen extends StatefulWidget {
-  final Function(String) onQRScanned; // Callback para enviar datos al padre
+  final Function(Map<String, String>) onQRScanned; // Callback para enviar datos al padre
 
   const ScanQrScreen({required this.onQRScanned, Key? key}) : super(key: key);
 
@@ -13,7 +14,7 @@ class ScanQrScreen extends StatefulWidget {
 class _ScanQrScreenState extends State<ScanQrScreen> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
-  String? scannedResult;
+  String? scannedMessage;
 
   @override
   void reassemble() {
@@ -37,6 +38,35 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     controller?.resumeCamera();
   }
 
+  void _handleQRData(String qrData) {
+    try {
+      final Map<String, dynamic> parsedData = jsonDecode(qrData);
+
+      // Verificar que el JSON contenga los campos esperados
+      if (parsedData.containsKey('name') &&
+          parsedData.containsKey('lastName') &&
+          parsedData.containsKey('email')) {
+        widget.onQRScanned({
+          'name': parsedData['name'],
+          'lastName': parsedData['lastName'],
+          'email': parsedData['email'],
+        });
+
+        setState(() {
+          scannedMessage = "Datos escaneados correctamente.";
+        });
+      } else {
+        setState(() {
+          scannedMessage = "Formato de datos no válido en el QR.";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        scannedMessage = "Error al procesar el QR.";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,11 +81,8 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
               onQRViewCreated: (QRViewController controller) {
                 this.controller = controller;
                 controller.scannedDataStream.listen((scanData) {
-                  if (scannedResult != scanData.code) {
-                    setState(() {
-                      scannedResult = scanData.code;
-                    });
-                    widget.onQRScanned(scanData.code!); // Notifica al ResultScreen
+                  if (scannedMessage != scanData.code) {
+                    _handleQRData(scanData.code!);
                   }
                 });
               },
@@ -67,8 +94,9 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  scannedResult ?? 'Esperando escaneo...',
+                  scannedMessage ?? 'Esperando escaneo...',
                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -80,7 +108,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                     ),
                     ElevatedButton(
                       onPressed: _resumeCamera,
-                      child: const Text('Abrir Cámara'),
+                      child: const Text('Reanudar Cámara'),
                     ),
                   ],
                 ),

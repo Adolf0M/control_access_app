@@ -65,14 +65,15 @@ Widget build(BuildContext context) {
   final List<Widget> _widgetOptions = <Widget>[
     _buildResultView(),
     ScanQrScreen(
-      onQRScanned: (String scannedResult) {
-        _addUser({
-          'name': 'Nombre QR', // Asigna un valor por defecto o úsalo según el formato del QR
-          'lastName': 'Apellido QR',
-          'email': scannedResult,
-        });
-      },
-    ),
+  onQRScanned: (Map<String, String> scannedData) {
+    _addUser({
+      'name': scannedData['name']!,
+      'lastName': scannedData['lastName']!,
+      'email': scannedData['email']!,
+    });
+  },
+),
+
     AddUsersScreen(onUserAdded: _addUser),
   ];
 
