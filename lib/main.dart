@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
-import 'home.dart';
+import 'result-users.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
 }
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
