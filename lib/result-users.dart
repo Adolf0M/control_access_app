@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'add-users.dart';
 import 'scan-qr.dart';
+import 'login.dart';
 
 class ResultScreen extends StatefulWidget {
-  const ResultScreen({Key? key}) : super(key: key);
+  const ResultScreen({super.key});
 
   @override
   State<ResultScreen> createState() => _ResultScreenState();
@@ -60,52 +61,76 @@ class _ResultScreenState extends State<ResultScreen> {
     });
   }
 
-  @override
-Widget build(BuildContext context) {
-  final List<Widget> _widgetOptions = <Widget>[
-    _buildResultView(),
-    ScanQrScreen(
-  onQRScanned: (Map<String, String> scannedData) {
-    _addUser({
-      'name': scannedData['name']!,
-      'lastName': scannedData['lastName']!,
-      'email': scannedData['email']!,
+  void _logout() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
+  void _onTabSelected(int index) {
+    setState(() {
+      _selectedIndex = index;
     });
-  },
-),
+  }
 
-    AddUsersScreen(onUserAdded: _addUser),
-  ];
+  @override
+  Widget build(BuildContext context) {
+    final List<Widget> widgetOptions = <Widget>[
+      _buildResultView(),
+      ScanQrScreen(
+        onQRScanned: (Map<String, String> scannedData) {
+          _addUser({
+            'name': scannedData['name']!,
+            'lastName': scannedData['lastName']!,
+            'email': scannedData['email']!,
+          });
+        },
+      ),
+      AddUsersScreen(onUserAdded: _addUser),
+    ];
 
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(_titles[_selectedIndex]),
-    ),
-    body: _widgetOptions.elementAt(_selectedIndex),
-    bottomNavigationBar: BottomNavigationBar(
-      currentIndex: _selectedIndex,
-      onTap: (index) {
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.list),
-          label: 'Resultados',
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_titles[_selectedIndex]),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Cerrar sesión',
+            onPressed: _logout,
+          ),
+        ],
+      ),
+      body: widgetOptions.elementAt(_selectedIndex),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _onTabSelected(1), // Cambia a la vista del escáner
+        backgroundColor: Colors.orange, // Color llamativo
+        child: const Icon(Icons.camera_alt, size: 30, color: Colors.white),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 10.0, // Margen del recorte
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.list),
+              onPressed: () => _onTabSelected(0),
+              color: _selectedIndex == 0 ? Colors.blue : Colors.grey,
+            ),
+            const SizedBox(width: 40), // Espacio para el FAB
+            IconButton(
+              icon: const Icon(Icons.person_add),
+              onPressed: () => _onTabSelected(2),
+              color: _selectedIndex == 2 ? Colors.blue : Colors.grey,
+            ),
+          ],
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.camera_alt),
-          label: 'Escanear',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_add),
-          label: 'Usuarios',
-        ),
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
 
   Widget _buildResultView() {
     return _users.isEmpty

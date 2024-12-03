@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AddUsersScreen extends StatefulWidget {
   final Function(Map<String, String>) onUserAdded;
 
-  AddUsersScreen({required this.onUserAdded, Key? key}) : super(key: key);
+  const AddUsersScreen({required this.onUserAdded, super.key});
 
   @override
   State<AddUsersScreen> createState() => _AddUsersScreenState();

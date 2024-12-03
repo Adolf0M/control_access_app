@@ -5,7 +5,7 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 class ScanQrScreen extends StatefulWidget {
   final Function(Map<String, String>) onQRScanned; // Callback para enviar datos al padre
 
-  const ScanQrScreen({required this.onQRScanned, Key? key}) : super(key: key);
+  const ScanQrScreen({required this.onQRScanned, super.key});
 
   @override
   _ScanQrScreenState createState() => _ScanQrScreenState();
