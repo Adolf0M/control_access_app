@@ -12,8 +12,12 @@ dependencies:
     sdk: flutter
   qr_flutter: ^4.0.0
   qr_code_scanner: ^1.0.0
+<<<<<<< HEAD
   firebase_core: ^3.5.0
   firebase_auth: ^5.3.0
+=======
+  firebase_core: ^3.2.0
+>>>>>>> 07bab4834e3c6e76dbd58b1da7c9ab684db15c9c
   firebase_database: ^11.0.0
   image_picker: ^0.8.0
   http: ^1.0.0

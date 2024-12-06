@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/firebase-options.dart';
 import 'login.dart';
+<<<<<<< HEAD
 import 'home.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'widget_tree.dart';
+=======
+>>>>>>> 07bab4834e3c6e76dbd58b1da7c9ab684db15c9c
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +17,7 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +44,7 @@ class MyApp extends StatelessWidget {
 }
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   _SplashScreenState createState() => _SplashScreenState();

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 buildscript {
     repositories {
         google()
@@ -10,9 +11,24 @@ buildscript {
 }
 
 allprojects {
+=======
+// build.gradle en el nivel raíz del proyecto (android/build.gradle)
+
+buildscript {
+>>>>>>> 07bab4834e3c6e76dbd58b1da7c9ab684db15c9c
     repositories {
         google()
         mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.0.2' // Asegúrate de usar una versión compatible
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral() // Mantén mavenCentral en lugar de jcenter
     }
 }
 
@@ -24,6 +40,7 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+// Tarea de limpieza
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class ScanQrScreen extends StatefulWidget {
+<<<<<<< HEAD
   final Function(Map<String, String>)
       onQRScanned; // Callback para enviar datos al padre
+=======
+  final Function(Map<String, String>) onQRScanned; // Callback para enviar datos al padre
+>>>>>>> 07bab4834e3c6e76dbd58b1da7c9ab684db15c9c
 
   const ScanQrScreen({required this.onQRScanned, super.key});
 
@@ -71,7 +75,12 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+<<<<<<< HEAD
       appBar: AppBar(),
+=======
+      appBar: AppBar(
+      ),
+>>>>>>> 07bab4834e3c6e76dbd58b1da7c9ab684db15c9c
       body: Column(
         children: <Widget>[
           Expanded(
@@ -95,8 +104,12 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
               children: [
                 Text(
                   scannedMessage ?? 'Esperando escaneo...',
+<<<<<<< HEAD
                   style: const TextStyle(
                       fontSize: 20, fontWeight: FontWeight.bold),
+=======
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+>>>>>>> 07bab4834e3c6e76dbd58b1da7c9ab684db15c9c
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),

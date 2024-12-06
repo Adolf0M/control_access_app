@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-import 'home.dart';
-import 'auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-=======
-// import 'home.dart';
+import 'package:http/http.dart' as http; // Paquete para manejar solicitudes HTTP
+import 'dart:convert'; // Para manejar respuestas JSON
 import 'result-users.dart';
->>>>>>> 07bab4834e3c6e76dbd58b1da7c9ab684db15c9c
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -18,59 +13,59 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool isLoading = false; // Indica si la solicitud está en curso
 
-  // Usuario y contraseña de ejemplo
-  final String exampleEmail = 'admin@example.com';
-  final String examplePassword = '123456';
-  String? errorMessage = '';
-  bool isLogin = true;
+  Future<void> _login() async {
+    setState(() {
+      isLoading = true; // Muestra un indicador de carga
+    });
 
-  Future<void> signWithEmailAndPassword() async {
+    // Reemplaza esta URL con la de tu API de autenticación
+    const String apiUrl = 'https://tu-api.com/auth/login';
+
     try {
-      await Auth().signInWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': emailController.text,
+          'password': passwordController.text,
+        }),
       );
-    } on FirebaseAuthException catch (e) {
+
       setState(() {
-        errorMessage = e.message;
+        isLoading = false; // Oculta el indicador de carga
       });
-    }
-  }
 
-  Future<void> createUserWithEmailAndPassword() async {
-    try {
-      await Auth().createUserWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
-    } on FirebaseAuthException catch (e) {
+      if (response.statusCode == 200) {
+        // Parsear la respuesta JSON
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        // Aquí puedes manejar el token o información de sesión
+        final String token = responseData['token'];
+
+        // Navegar a la pantalla de resultados
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const ResultScreen()),
+        );
+      } else {
+        // Manejo de errores
+        final Map<String, dynamic> errorData = jsonDecode(response.body);
+        _showError(errorData['message'] ?? 'Error desconocido');
+      }
+    } catch (e) {
       setState(() {
-        errorMessage = e.message;
+        isLoading = false; // Oculta el indicador de carga
       });
+      _showError('Ocurrió un error al intentar iniciar sesión');
     }
   }
 
-  void _login() {
-    if (emailController.text == exampleEmail &&
-        passwordController.text == examplePassword) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const ResultScreen()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Credenciales incorrectas')),
-      );
-    }
-  }
-
-  Widget _title() {
-    return const Text("Firebase Auth");
-  }
-
-  Widget _errorMessage() {
-    return Text(errorMessage == '' ? '' : 'Humm ? $errorMessage');
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
@@ -134,39 +129,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: isLogin
-                    ? signWithEmailAndPassword
-                    : createUserWithEmailAndPassword,
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  backgroundColor: const Color(0xFFC33764),
-                  foregroundColor: Colors.white,
-                ),
-                child: Text(isLogin ? 'Logueado' : 'Registrado'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    isLogin = !isLogin;
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  backgroundColor: const Color(0xFFC33764),
-                  foregroundColor: Colors.white,
-                ),
-                child:
-                    Text(isLogin ? 'Ya está Logueado' : 'Ya está Registrado'),
-              ),
+              isLoading
+                  ? const CircularProgressIndicator() // Indicador de carga
+                  : ElevatedButton(
+                      onPressed: _login,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        backgroundColor: const Color(0xFFC33764),
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('Iniciar Sesión'),
+                    ),
             ],
           ),
         ),
