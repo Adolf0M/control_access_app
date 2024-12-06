@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "671680280087",
+    "project_id": "control-access-406b6",
+    "storage_bucket": "control-access-406b6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:671680280087:android:75e8bca92784ecb1d48e52",
+        "android_client_info": {
+          "package_name": "com.shop.access.control"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeQ78cw-i74enEtowDoCGwifGJ5itOwxk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'add-users.dart'; // Asegúrate de importar la pantalla de agregar usuarios.
+import 'package:my_app/auth.dart';
+import 'add-users.dart';
+import 'scan-qr.dart';
+import 'result-users.dart'; // Asegúrate de importar correctamente
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,26 +18,33 @@ class _HomeScreenState extends State<HomeScreen> {
   // Lista de títulos para cada pantalla
   static const List<String> _titles = <String>[
     'Inicio', // Título para la pantalla Home
-    'Escáner - Próxima funcionalidad',  // Título para la pantalla de escanear
+    'Escáner - Próxima funcionalidad', // Título para la pantalla de escanear
     'Agregar Usuario', // Título para la pantalla de agregar usuario
   ];
 
   // Lista de pantallas a mostrar
-  static const List<Widget> _widgetOptions = <Widget>[
-    Center(
-      child: Text(
-        'Inicio',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    ),
-    Center(
-      child: Text(
-        'Escáner - Próxima funcionalidad',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    ),
-    AddUsersScreen(), // Redirige a la pantalla de agregar usuarios
-  ];
+  List<Widget> _widgetOptions(BuildContext context) => <Widget>[
+        ScanQrScreen(
+          onQRScanned: (qrData) {
+            // Maneja los datos escaneados del QR
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    'QR Escaneado: ${qrData["name"]} - ${qrData["email"]}'),
+              ),
+            );
+          },
+        ),
+        AddUsersScreen(
+          onUserAdded: (userData) {
+            // Maneja los datos del usuario agregado
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Usuario agregado: ${userData["name"]}')),
+            );
+          },
+        ),
+        ResultScreen(), // Agregar la pantalla de resultados
+      ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -45,26 +56,73 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_titles[_selectedIndex]), // Muestra el título correspondiente
+        title: Text(_titles[_selectedIndex]),
       ),
-      body: _widgetOptions.elementAt(_selectedIndex), // Muestra la pantalla correspondiente
+      body: _widgetOptions(context)[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex, // Selección actual
-        onTap: _onItemTapped, // Llama a la función cuando se selecciona un ítem
-        items: const [
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt),
-            label: 'Escanear',
+            icon: Icon(Icons.qr_code),
+            label: 'Escáner',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_add),
-            label: 'Usuarios',
+            label: 'Agregar Usuario',
           ),
         ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  HomePage({Key? key}) : super(key: key);
+
+  final User? user = Auth().currentUser;
+
+  Future<void> signOut() async {
+    await Auth().signOut();
+  }
+
+  Widget _title() {
+    return const Text("Auth");
+  }
+
+  Widget _userUid() {
+    return Text(user?.email ?? 'User email');
+  }
+
+  Widget _signOutButton() {
+    return ElevatedButton(
+      onPressed: signOut,
+      child: const Text("Sign out"),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: _title(),
+      ),
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _userUid(),
+            _signOutButton(),
+          ],
+        ),
       ),
     );
   }

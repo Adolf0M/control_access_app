@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
+import 'auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -15,6 +17,34 @@ class _LoginScreenState extends State<LoginScreen> {
   // Usuario y contraseña de ejemplo
   final String exampleEmail = 'admin@example.com';
   final String examplePassword = '123456';
+  String? errorMessage = '';
+  bool isLogin = true;
+
+  Future<void> signWithEmailAndPassword() async {
+    try {
+      await Auth().signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+      });
+    }
+  }
+
+  Future<void> createUserWithEmailAndPassword() async {
+    try {
+      await Auth().createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+      });
+    }
+  }
 
   void _login() {
     if (emailController.text == exampleEmail &&
@@ -28,6 +58,14 @@ class _LoginScreenState extends State<LoginScreen> {
         const SnackBar(content: Text('Credenciales incorrectas')),
       );
     }
+  }
+
+  Widget _title() {
+    return const Text("Firebase Auth");
+  }
+
+  Widget _errorMessage() {
+    return Text(errorMessage == '' ? '' : 'Humm ? $errorMessage');
   }
 
   @override
@@ -92,17 +130,37 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: _login,
+                onPressed: isLogin
+                    ? signWithEmailAndPassword
+                    : createUserWithEmailAndPassword,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 15, horizontal: 50),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                   backgroundColor: const Color(0xFFC33764),
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Iniciar Sesión'),
+                child: Text(isLogin ? 'Logueado' : 'Registrado'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    isLogin = !isLogin;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  backgroundColor: const Color(0xFFC33764),
+                  foregroundColor: Colors.white,
+                ),
+                child:
+                    Text(isLogin ? 'Ya está Logueado' : 'Ya está Registrado'),
               ),
             ],
           ),
